@@ -1,0 +1,58 @@
+{% extends 'store/layout.html' %}
+{% load static %}
+{% load store_tags %}
+{% block title %}Categories{% endblock %}
+{% block categories %}
+    <nav class="navbar navbar-expand-sm navbar-dark sec-nav">
+    <div class="container justify-content-center">
+        <ul class="nav navbar-nav w-100 flex-nowrap">
+	        {% for cat in cats%}
+	            <li class="nav-item active">
+		        {%if cat == cat_selected%}
+		            <p class="nav-link-selected lk" >{{cat.name}}</p>
+		        {%else%}
+		            {% getcatsurl gender=gender_selected cat=cat as URL%}
+                    <a class="nav-link lk" href="{{URL}}" >{{cat.name}}</a>
+		        {%endif%}
+		    {% endfor %}
+	            </li>
+        </ul>
+        <form class="d-flex" role="search" id="search-form">
+        <input class="form-control search-input me-2" type="search" placeholder="Search" aria-label="Search" name ="search_area" value="{{ search_input }}">
+        <button type="submit" class="btn btn-dark"><img src="../../static/store/img/loupe.png" alt="Loupe Icon"></button>
+        </form>
+    </div>
+    </nav>
+    <script>
+    const form = document.querySelector('#search-form');
+    const button = form.querySelector('button[type="submit"]');
+
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        form.submit();
+    });
+    </script>
+
+{% endblock %}
+{% block content %}
+
+    <link rel="stylesheet" href="{% static 'store/css/CategoriesCartCheckout.css' %}">
+	<div style="display: flex; flex-wrap: wrap; width: 90%; margin: 50px auto;" class="row">
+		{%for product in products%}
+		<div style="width: 274px; height: 300px; flex-basis: 25%; max-width: 274px; margin-bottom: 112px;" class="col-lg-4">
+			<img style="height: 300px;" class="thumbnail" src="{{product.photo.url}}">
+			<div class="box-element product">
+				<h6><strong>{{product.name}}</strong></h6>
+				<hr>
+
+				<a class="btn btn-outline-success" href="{% url 'product' product_slug=product.slug %}">View</a>
+				<h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
+
+			</div>
+		</div>
+		{%endfor%}
+
+
+	</div>
+
+{% endblock %}

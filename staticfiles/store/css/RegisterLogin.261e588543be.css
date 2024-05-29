@@ -1,0 +1,85 @@
+html, body { height: 100%; }
+
+.log-input{
+    width: 100%;
+}
+.title{
+    font-family: Arial , sans-serif;
+}
+.login-form {
+  width: 100%;
+  padding: 2em;
+  position: relative;
+  background: rgba(black, .15);
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: -2px; left: 0;
+    height: 2px; width: 100%;
+  }
+
+  @media screen and (min-width: 600px) {
+    width: 50vw;
+    max-width: 15em;
+  }
+}
+
+  .flex-row {
+    display: flex;
+    margin-bottom: 1em;
+  }
+
+  .lf--label {
+    width: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: $gray-light;
+    cursor: pointer;
+  }
+  .lf--input {
+    width: 100%;
+    flex: 1;
+    padding: 1em;
+    border: 0;
+    color: $gray;
+    font-size: 1rem;
+
+    &:focus {
+      outline: none;
+      transition: transform .15s ease;
+      transform: scale(1.1);
+    }
+  }
+
+  .lf--submit {
+    display: block;
+    padding: 1em;
+    width: 100%;
+
+    background: #00d6b7;
+    border: 0;
+    color: #fff;
+    cursor: pointer;
+    font-size: .75em;
+    font-weight: 600;
+    text-shadow: 0 1px 0 rgba(black, .2);
+
+    &:focus {
+      outline: none;
+      transition: transform .15s ease;
+      transform: scale(1.1);
+    }
+  }
+
+.href{
+  margin-top: 1em;
+  color: gray;
+  font-size: 18px;
+  text-decoration: none;
+  position: relative;
+}
+
+::placeholder { color: $gray; }

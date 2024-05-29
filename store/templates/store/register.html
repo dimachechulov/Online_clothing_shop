@@ -1,0 +1,40 @@
+{% extends 'store/baselogin.html' %}
+{%load static %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<style>
+    .href {
+        margin-top: 1em;
+        color: gray;
+        font-size: 18px;
+        text-decoration: none;
+        position: relative;
+    }
+    .href:hover {
+        color: black;
+    }
+    .errorlist {
+        list-style: none;
+    }
+</style>
+<div style="text-align: center;">
+<h1 style="font-family: Arial , sans-serif; margin-bottom: 30px;" class = 'title'>{{title}}</h1>
+</div>
+
+<form style="font-family: Arial , sans-serif;" method="post"  class='login-form'>
+    {% csrf_token %}
+
+{% for f in form %}
+    <div class="flex-row" style="padding-top: 3px;">
+        <p align = "center" class = 'log-input'>{{ f }}</p>
+        <div style="text-align: center; text-decoration: none;" class="form-error">{{ f.errors }}</div>
+    </div>
+{% endfor %}
+
+    <div style="text-align: center;">
+        <input style="width: 400px; border-radius: 10px; text-align: center; font-family: Arial , sans-serif; padding-top: 6px; margin-top: 7px;" class="btn btn-dark" type="submit" value="REGISTER">
+    </div>
+</form>
+<div style='text-align:center; padding-top: 30px;'><a class='href' href="{%url 'login'%}">Already have an account? Log in</a></div>
+
+{% endblock %}

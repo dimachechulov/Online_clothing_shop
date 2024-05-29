@@ -1,0 +1,124 @@
+{% extends 'store/layout.html' %}
+{% load static %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'store/css/CategoriesCartCheckout.css' %}">
+	<script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://js.stripe.com/v3/"></script>
+     <div class="row">
+		<div class="col-lg-5" style="height: 317px">
+			<div class="box-element" id="form-wrapper">
+				<form id="form">
+					<div id="shipping-info">
+						<p style="margin-left: 6px;">Shipping Information:</p>
+						<div class="form-field">
+							<input class="form-control" type="text" name="address" placeholder="Address">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="city" placeholder="City">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="state" placeholder="State">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="zipcode" placeholder="Zip code">
+						</div>
+					</div>
+
+					{% csrf_token %}
+					<button class="btn btn-success btn-block" type="button" id="checkout-button" style="margin-left: 5px; margin-top: 5px;">Checkout</button>
+
+				</form>
+			</div>
+
+			<br>
+			<div class="box-element hidden" id="payment-info">
+				<small>Paypal Options</small>
+			</div>
+
+		</div>
+
+		<div class="col-lg-5" style="height: 317px">
+			<div class="box-element">
+				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+				<h3 style="margin-top: 10px; margin-bottom: 18px;">Order Summary</h3>
+				{%for orderproduct in order.products.all%}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{orderproduct.product.photo.url}}"></div>
+					<div style="flex:2">{{orderproduct.product.name}}</div>
+					<div style="flex:1"><p>${{orderproduct.product.price}}</p></div>
+					<div style="flex:1"><p>x{{orderproduct.quantity}}</p></div>
+					<div style="flex:1"><p>{{orderproduct.size}}</p></div>
+				</div>
+				{%endfor%}
+                <h5>Items:   {{order.get_total_quantity}}</h5>
+				<h5>Total:   ${{order.get_total}}</h5>
+			</div>
+		</div>
+	</div>
+					 <script type="text/javascript">
+  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+// Create an instance of the Stripe object with your publishable API key
+var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+//
+
+var checkoutButton = document.getElementById("checkout-button");
+checkoutButton.addEventListener("click", function () {
+	var address = document.getElementsByName("address")[0].value
+	var city = document.getElementsByName("city")[0].value
+	var state = document.getElementsByName("state")[0].value
+	var zipcode = document.getElementsByName("zipcode")[0].value
+            // Создаем объект данных из формы
+     var Data = {
+     	'address':address,
+     	'city':city,
+     	'state':state,
+     	'zipcode':zipcode,
+     	'order_id':{{order.id}}
+     }
+
+
+     // Отправляем запрос на сервер
+     fetch("{%url 'get_address' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify(Data)
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error(error));
+
+  fetch("{% url 'create-checkout-session' order.id %}", {
+    method: "POST",
+    headers: {
+        'X-CSRFToken': csrftoken
+    }
+  })
+
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (session) {
+      return stripe.redirectToCheckout({ sessionId: session.id });
+    })
+    .then(function (result) {
+      // If redirectToCheckout fails due to a browser or network
+      // error, you should display the localized error message to your
+      // customer using error.message.
+      if (result.error) {
+        alert(result.error.message);
+      }
+    })
+    .catch(function (error) {
+      console.error("Error:", error);
+    });
+
+});
+  </script>
+{% endblock %}

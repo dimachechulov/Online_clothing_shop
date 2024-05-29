@@ -1,0 +1,83 @@
+{% extends 'store/layout.html' %}
+{% load static %}
+{% load store_tags %}
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="{% static 'store/css/CategoriesCartCheckout.css' %}">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="box-element">
+				<a  class="btn btn-outline-dark" href="{% url 'main' %}">&#x2190; Continue Shopping</a>
+			</div>
+
+			<br>
+			<div class="box-element">
+				<div class="cart-row">
+					<div style="flex:2"></div>
+					<div style="flex:2"><strong>Item</strong></div>
+					<div style="flex:1"><strong>Price</strong></div>
+					<div style="flex:1"><strong>Size</strong></div>
+					<div style="flex:1"><strong>Quantity</strong></div>
+					<div style="flex:1"><strong>Total</strong></div>
+				</div>
+				{%for orderproduct in order.products.all%}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{orderproduct.product.photo.url}}"></div>
+					<div style="flex:2"><p>{{orderproduct.product.name}}</p></div>
+					<div style="flex:1"><p>${{orderproduct.product.price}}</p></div>
+					<div style="flex:1"><p>{{orderproduct.size.name}}</p></div>
+					<div style="flex:1">
+						<p class="quantity">{{orderproduct.quantity}}</p>
+						<div class="quantity">
+							{% getquantity order_product_pk=orderproduct.pk plus=1 as URL%}
+							<a href = "{{URL}}"><img class="chg-quantity" src="../../static/store/img/arrow-up.png"></a>
+							{% getquantity order_product_pk=orderproduct.pk plus=0 as URL%}
+							<a href = "{{URL}}"><img class="chg-quantity" src="../../static/store/img/arrow-down.png"></a>
+						</div>
+					</div>
+					<div style="flex:1"><p>${{orderproduct.get_total_product_price}}</p></div>
+				</div>
+				{%endfor%}
+
+			</div>
+            <br>
+            <div class="box-element">
+                <form method="GET" style="margin-bottom: 10px;" action="{% url 'cart' %}">
+                    <input type="text" name="promo_code" placeholder="Enter promo code">
+                    <button type="submit" class="btn btn-outline-success" style="
+                        padding-top: 3px;
+                        padding-bottom: 3px;
+                        margin-bottom: 3px;
+                    ">Apply</button>
+                    {% if order.discount_percent %}
+                        <button type="submit" name="reset_promo" value="true" class="btn btn-outline-danger" style="
+                            padding-top: 3px;
+                            padding-bottom: 3px;
+                            margin-bottom: 3px;
+                        ">Reset Promo Code</button>
+                    {% endif %}
+                </form>
+				<table class="table">
+					<tr>
+						<th><h5>Items: <strong>{{order.products.count}}</strong></h5></th>
+						{% if order.discount_percent %}
+                            <th><h5>Total without discount: <strong>${{ order.get_total_without_disc }}</strong></h5></th>
+                            <th><h5>Discount: <strong>{{ order.discount_percent }}%</strong></h5></th>
+                            <th><h5>Total: <strong>${{ order.get_total }}</strong></h5></th>
+                        {% else %}
+                            <th><h5>Total: <strong>${{ order.get_total }}</strong></h5></th>
+                        {% endif %}
+						<th>
+							<a style="float:right; margin:5px;" class="btn btn-success" href="{{order.get_payment_url}}">Checkout</a>
+						</th>
+					</tr>
+				</table>
+
+			</div>
+
+		</div>
+	</div>
+
+{% endblock %}

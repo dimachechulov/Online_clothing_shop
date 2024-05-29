@@ -1,0 +1,64 @@
+{% extends 'store/layout.html' %}
+{% load static %}
+{% load store_tags %}
+{% block title %}Favorites{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'store/css/CategoriesCartCheckout.css' %}">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="box-element">
+
+				<a  class="btn btn-outline-dark" href="{% url 'main' %}">&#x2190; Continue Shopping</a>
+
+				<br>
+
+			</div>
+
+			<br>
+			<div class="box-element">
+				<div class="cart-row">
+					<div style="flex:2"></div>
+					<div style="flex:2"><strong>Item</strong></div>
+					<div style="flex:1"><strong>Price</strong></div>
+                    <div style="flex:1"><strong>Size</strong></div>
+					<div style="flex:1"><strong>Add</strong></div>
+					<div style="flex:1"><strong>Delete</strong></div>
+				</div>
+				{%for product in favorite.products.all%}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{product.photo.url}}"></div>
+					<div style="flex:2"><p>{{product.name}}</p></div>
+					<div style="flex:1"><p>${{product.price}}</p></div>
+					<div style="flex:1">
+						<select name="sizes" id="{{product.name}}">
+						{%for size in product.sizes.all%}
+            			<option value="{{size.name}}">{{size.name}}</option>
+						{%endfor%}
+						</select>
+                    </div>
+			    <div style="flex:1">
+                    <input style="flex:1" type="button" id="addcart_{{product.slug}}" value="Add to Cart" class="btn btn-outline-success add-btn"  name="">
+                </div>
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("addcart_{{product.slug}}").onclick = function() {
+  	var size = document.getElementById("{{product.name}}").value;
+  	console.log(size);
+    window.location.href = "/add_to_cart/"+"{{product.slug}}"+"/"+size+"/";
+
+};
+});
+</script>
+					<div style="flex:1">
+                        <a href = "{{product.get_delete_favorite}}" class="btn btn-outline-danger add-btn">Delete</a>
+                    </div>
+				</div>
+				{%endfor%}
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
